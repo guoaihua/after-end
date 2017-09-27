@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>websocket</title>
+</head>
+<body>
+	<input type="text" id="message">
+	<button id="send">发送</button>
+	<span id="show">show message</span>
+	<script>
+		
+		var ms=document.getElementById("message");
+		var send=document.getElementById("send");
+		var show=document.getElementById("show");
+
+		if('WebSocket' in window){  // 对象遍历
+			var ws = new WebSocket('ws://localhost:3000');
+		}else {
+			alert("当前浏览器不支持websocket");
+		}
+
+		// 连接成功的回调函数 onopen
+		ws.onopen=function (){
+				show.innerHTML="concection";
+			send.onclick = function (){
+				ws.send(ms.value);    // 发送input的值给服务器
+			}
+
+			// 接受消息
+			ws.onmessage = function (event){
+					var ms = JSON.parse(event.data);
+					if(ms.type == "in"){
+						show.innerHTML+=ms.str+" comein"+"</br>"; 
+					}else if(ms.type == "out"){
+						show.innerHTML+=ms.str+" comeout"+"</br>"; 
+					}else {
+						show.innerHTML+=ms.str+"</br>";
+					}
+					
+				}	
+		}
+
+		ws.onclose = function () {
+				alert("连接已关闭");
+		}
+
+
+		// 关闭连接
+		function closeWebSocket() {
+			ws.close();
+		}
+
+
+
+
+
+	</script>
+</body>
+</html>
